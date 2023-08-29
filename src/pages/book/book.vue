@@ -1,5 +1,4 @@
 <template>
-    <u-navbar bgColor="#00000000" :autoBack="true" />
     <view class="content">
         <view class="img-box">
             <view class="label">
@@ -158,14 +157,14 @@ function onClick(_isPlaying: boolean) {
 
 <style lang="scss">
 .content {
-    height: 100vh;
+    background-color: $uni-bg-color-grey;
     width: 750rpx;
 }
 
 .img-box {
     border-radius: $uni-border-radius-base;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
-    margin: $uni-spacing-row-lg;
+    margin: 10px $uni-spacing-row-lg;
     height: (750 * 0.72) * 1rpx;
     display: flex;
     flex-direction: column-reverse;
