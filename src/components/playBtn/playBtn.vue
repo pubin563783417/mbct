@@ -13,7 +13,7 @@
             }"></view>
         <view class="cover" v-show="props.newState"></view>
         <view class="textView">
-            <text class="title">{{ props.isPlaying ? 'Playing' : 'Play' }}</text>
+            <text class="title">{{ props.isPlaying ? '暂停' : '播放' }}</text>
             <text class="time">{{
                 secondsToTime(props.audioDuration * (sliderWidth0_100 / 100)) +
                 '/' +

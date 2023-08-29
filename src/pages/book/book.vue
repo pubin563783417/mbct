@@ -33,7 +33,7 @@ import { useBooksStore } from '@/stores/book'
 
 const booksStore = useBooksStore()
 let book = ref<Book>()
-var innerAudioContext: UniApp.InnerAudioContext
+var innerAudioContext: UniNamespace.BackgroundAudioManager
 
 const audioDuration = ref(0)
 const audioTime = ref(0)
@@ -52,25 +52,25 @@ onUnload(() => {
     console.log('onUnload')
     if (innerAudioContext) {
         innerAudioContext.stop()
-        innerAudioContext.destroy()
+        // innerAudioContext.destroy()
     }
     if (isPlaying.value) {
         // 保持屏幕常亮
-        uni.setKeepScreenOn({
-            keepScreenOn: false,
-            success: () => {
-                console.log('setKeepScreenOn to false')
-            },
-        })
+        // uni.setKeepScreenOn({
+        //     keepScreenOn: false,
+        //     success: () => {
+        //         console.log('setKeepScreenOn to false')
+        //     },
+        // })
     }
 })
 
 watch(isPlaying, (_isPlaying, _) => {
     const isLight = isPlaying.value ? true : false
     // 保持屏幕常亮
-    uni.setKeepScreenOn({
-        keepScreenOn: isLight,
-    })
+    // uni.setKeepScreenOn({
+    //     keepScreenOn: isLight,
+    // })
     console.log(`screen light change :${isLight}`)
 })
 
@@ -84,8 +84,12 @@ function play() {
         innerAudioContext.play()
     } else {
         newState.value = false
-        innerAudioContext = uni.createInnerAudioContext()
-        innerAudioContext.autoplay = true
+        innerAudioContext = uni.getBackgroundAudioManager()
+        innerAudioContext.src = book.value.url
+        innerAudioContext.title = book.value.title
+        innerAudioContext.singer = book.value.author
+        innerAudioContext.coverImgUrl = book.value.icon
+        // innerAudioContext.autoplay = true
 
         innerAudioContext.onTimeUpdate(() => {
             audioTime.value = innerAudioContext.currentTime
@@ -128,7 +132,6 @@ function play() {
             console.log('onPause')
             isPlaying.value = false
         })
-        innerAudioContext.src = book.value.url
     }
 }
 function pause() {
@@ -159,12 +162,14 @@ function onClick(_isPlaying: boolean) {
 .content {
     background-color: $uni-bg-color-grey;
     width: 750rpx;
+    padding-top: 20px;
+    // margin-top: 100px;
 }
 
 .img-box {
     border-radius: $uni-border-radius-base;
     box-shadow: 0px 3px 5px 1px rgba(0, 0, 0, 0.2);
-    margin: 10px $uni-spacing-row-lg;
+    margin: 0px $uni-spacing-row-lg;
     height: (750 * 0.72) * 1rpx;
     display: flex;
     flex-direction: column-reverse;
