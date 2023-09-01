@@ -18,7 +18,10 @@
         // },
 
         {
-            "path": "pages/index/index"
+            "path": "pages/index/index",
+            "style": {
+                "navigationStyle": "custom"
+            }
         },
         {
             "path": "pages/book/book"

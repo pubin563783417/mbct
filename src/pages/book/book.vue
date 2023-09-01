@@ -2,14 +2,14 @@
     <view class="content">
         <view class="img-box">
             <view class="label">
-                <text class="lb-text">时长: {{ book.duration }}</text>
+                <text class="lb-text">时长: {{ book?.duration }}</text>
             </view>
-            <image class="img" mode="aspectFill" :src="book.icon"></image>
+            <image class="img" mode="aspectFill" :src="book?.icon"></image>
         </view>
         <view class="text-content">
-            <text class="text-title">{{ book.title }}</text>
-            <text class="text-auther">{{ book.author }}</text>
-            <text class="text-desc">{{ book.desc }}</text>
+            <text class="text-title">{{ book?.title }}</text>
+            <text class="text-auther">{{ book?.author }}</text>
+            <text class="text-desc">{{ book?.desc }}</text>
         </view>
 
         <PlayBtn
@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-import { Book } from '@/models/book'
+import { Book } from '@/defines/book'
 import PlayBtn from '@/components/playBtn/playBtn.vue'
 import { onHide, onLoad, onUnload } from '@dcloudio/uni-app'
 import { onUnmounted, ref, watch } from 'vue'
@@ -199,7 +199,7 @@ function onClick(_isPlaying: boolean) {
 
 .text-content {
     margin: $uni-spacing-col-lg $uni-spacing-row-lg 0;
-    padding-bottom: 250rpx;
+    padding-bottom: 290rpx;
 }
 
 .text-title {

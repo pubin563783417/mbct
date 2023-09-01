@@ -1,21 +1,19 @@
 <template>
-    <uni-grid
-        style="width: 750rpx"
-        @change="clickCellSel"
-        :column="2"
-        :square="false"
-        :highlight="false"
-        :showBorder="false">
-        <uni-grid-item v-for="(model, index) in props.models" :key="index" :index="index">
-            <view class="wrap">
-                <view class="content">
-                    <image class="img" :src="model.icon" mode="aspectFill"></image>
-                    <view class="text">{{ model.title }}</view>
-                    <view class="text">{{ model.duration }}</view>
-                </view>
+    <view class="content">
+        <text class="title" style="color: #a0cfff">今天未练习</text>
+        <view class="layout-content">
+            <view
+                v-for="(item, index) in props.models"
+                :key="index"
+                @click="clickCellSel(index)"
+                class="item-content">
+                <!-- <view class="img" style="background-color: #a0cfff"></view> -->
+                <image class="img" :src="item.icon" mode="aspectFill"></image>
+                <view class="text">{{ item.title }}</view>
+                <view class="text" style="margin-bottom: 10px">{{ item.duration }}</view>
             </view>
-        </uni-grid-item>
-    </uni-grid>
+        </view>
+    </view>
 </template>
 <script lang="ts">
 export default {
@@ -23,54 +21,68 @@ export default {
 }
 </script>
 <script lang="ts" setup>
-import { Book } from '@/models/book'
+import { Book } from '@/defines/book'
 const props = defineProps<{
-    models: [Book]
+    models: Array<Book>
 }>()
+console.log('models:')
+console.log(props.models)
+
 const emit = defineEmits<{
-    clickSel: [e: any]
+    clickSel: [index: number]
 }>()
-function clickCellSel(e: any) {
-    emit('clickSel', e)
+function clickCellSel(index: number) {
+    console.log('clickCellSel:' + index)
+    emit('clickSel', index)
 }
 </script>
 
-<style lang="scss">
-$itemWidth1: (750/2) * 1rpx;
-$itemMargin: 40rpx;
-$itemWidth2: ($itemWidth1 - $itemMargin * 2);
-$itemHeight2: $itemWidth1 * 1.28;
-$imgmMargin: 10rpx;
-$imgWidth: $itemWidth2 - $imgmMargin * 2;
-
-.wrap {
-    display: flex;
-    height: $itemHeight2;
-}
+<style lang="scss" scoped>
+$item-inside-margin: 20rpx;
+$item-space: 40rpx;
+$layout-width: 750rpx - 120rpx;
+$item-width: ($layout-width - $item-space) / 2;
+$img-width: $item-width - ($item-inside-margin * 2);
 
 .content {
-    flex: 1;
+    width: 100%;
+}
+.title {
+    font-size: 22px;
+    font-weight: normal;
     display: block;
-    margin: $itemMargin;
-    border-radius: 10px;
+}
+.layout-content {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-between;
+}
+.item-content {
+    width: $item-width;
+    margin-bottom: $item-space;
+    border-radius: $uni-border-radius-base;
+    box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.1);
     background-color: white;
 }
 
 .img {
-    margin: $imgmMargin;
-    border-radius: 5px;
-    width: $imgWidth;
-    height: $imgWidth;
+    // padding-top: 10px;
+    border-radius: $uni-border-radius-base;
+    width: $img-width;
+    height: $img-width;
+    margin: $item-inside-margin;
+    margin-bottom: 5px;
 }
 
 .text {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin: $imgmMargin $imgmMargin 0;
-    margin-top: 0px;
-    height: 50rpx;
-    width: $imgWidth;
+    margin: 0px 10px 0px 10px;
+    height: 40rpx;
     color: $uni-text-color;
     font-size: 15px;
     font-weight: bold;
