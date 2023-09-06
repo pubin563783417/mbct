@@ -1,6 +1,8 @@
 <template>
     <view class="content">
-        <text class="title" style="color: #a0cfff">今天未练习</text>
+        <text class="title" :style="{ color: props.exeTime / 60 >= 40 ? '#2979ff' : '#a0cfff' }">{{
+            props.exeTime > 0 ? `今天已练习${(props.exeTime / 60).toFixed(1)}分钟` : '今天未练习'
+        }}</text>
         <view class="layout-content">
             <view
                 v-for="(item, index) in props.models"
@@ -24,9 +26,8 @@ export default {
 import { Book } from '@/defines/book'
 const props = defineProps<{
     models: Array<Book>
+    exeTime: number
 }>()
-console.log('models:')
-console.log(props.models)
 
 const emit = defineEmits<{
     clickSel: [index: number]

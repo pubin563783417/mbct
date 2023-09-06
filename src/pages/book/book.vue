@@ -25,6 +25,7 @@
 </template>
 
 <script lang="ts" setup>
+import { User, Exercise, ExerciseDay, ExerciseItem } from '@/defines/user'
 import { Book } from '@/defines/book'
 import PlayBtn from '@/components/playBtn/playBtn.vue'
 import { onHide, onLoad, onUnload } from '@dcloudio/uni-app'
@@ -52,6 +53,7 @@ onUnload(() => {
     console.log('onUnload')
     if (innerAudioContext) {
         innerAudioContext.stop()
+        User.shared().exercise.stop()
         // innerAudioContext.destroy()
     }
     if (isPlaying.value) {
@@ -83,6 +85,11 @@ function play() {
     if (innerAudioContext) {
         innerAudioContext.play()
     } else {
+        let item: ExerciseItem = { id: book.value.id, name: book.value.title, secs: 0 }
+        let today = User.shared().exercise.today()
+        today.list.push(item)
+
+        // 播放
         newState.value = false
         innerAudioContext = uni.getBackgroundAudioManager()
         innerAudioContext.src = book.value.url
@@ -104,6 +111,7 @@ function play() {
             console.log('开始播放')
             // btnTitle.value = "Playing"
             isPlaying.value = true
+            User.shared().exercise.exe()
         })
         innerAudioContext.onError((res) => {
             console.log('onError')
@@ -123,14 +131,17 @@ function play() {
                 icon: 'none',
             })
             isPlaying.value = false
+            User.shared().exercise.stop()
         })
         innerAudioContext.onStop(() => {
             console.log('onStop')
             isPlaying.value = false
+            User.shared().exercise.stop()
         })
         innerAudioContext.onPause(() => {
             console.log('onPause')
             isPlaying.value = false
+            User.shared().exercise.stop()
         })
     }
 }

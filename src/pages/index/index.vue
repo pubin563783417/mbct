@@ -4,12 +4,12 @@
             <text class="title">正念</text>
             <view class="label-card1">
                 <text class="label-text1">你共练习了</text>
-                <text class="label-text2">120天</text>
+                <text class="label-text2">{{ user.exercise.daysList.length }}天</text>
             </view>
 
             <view class="label-card2">
-                <text class="label-text1">总天数</text>
-                <text class="label-text2">120</text>
+                <text class="label-text1">练习时长</text>
+                <text class="label-text2">{{ (user.exercise.secs / 3600).toFixed(2) }}小时</text>
             </view>
         </view>
 
@@ -18,7 +18,7 @@
                 class="swiper"
                 :circular="true"
                 :autoplay="true"
-                :interval="5000"
+                :interval="8000"
                 :vertical="true"
                 easing-function="easeInCubic"
                 :duration="500">
@@ -28,31 +28,53 @@
                 </swiper-item>
             </swiper>
         </view>
-        <Book1View class="book" :models="books" @clickSel="clickSel"></Book1View>
+        <Book1View
+            class="book"
+            :exe-time="todayExeTime"
+            :models="books"
+            @clickSel="clickSel"></Book1View>
         <BookRecommend class="recommend"></BookRecommend>
     </view>
 </template>
 
 <script lang="ts" setup>
-import { BookRecommend } from '@/components/bookRecommend/bookRecommend.vue'
+import BookRecommend from '@/components/bookRecommend/bookRecommend.vue'
 import { Book } from '@/defines/book'
+import { User, Exercise, ExerciseDay } from '@/defines/user'
 import Book1View from '@/components/book/book1.vue'
 import { useBooksStore } from '@/stores/book'
+import { useZNTipsStore } from '@/stores/tips'
 import { ZNTips } from '@/defines/tips'
-import { ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 const booksStore = useBooksStore()
 booksStore.setupTemp()
 
+const tipsStore = useZNTipsStore()
+tipsStore.setupTips()
+
 const books: Array<Book> = booksStore.tempBooks
 
-const tips = ref<Array<ZNTips>>([
-    { text: '你的昨天不在\n你这里\n！在别人那里', id: '121456' },
-    { text: 'DONE  Build complete. Watching for changes...', id: '121456' },
-    {
-        img: 'https://public-1-1309961435.cos.ap-chengdu.myqcloud.com/mbct/imgs/jingzuo.webp',
-        id: '121456',
-    },
-])
+const user = User.shared()
+
+const tips = ref<Array<ZNTips>>(tipsStore.tips)
+
+const todayExeTime = computed(() => {
+    const currentDate: Date = new Date()
+    const currentDateString: string = currentDate.toISOString().split('T')[0]
+    let today = User.shared().exercise.daysList.at(-1)
+
+    if (today && today.date === currentDateString) {
+        // 使用 reduce 方法来合并并计算数组中的元素
+        const result = today.list.reduce((accumulator, item) => {
+            // 在这个回调函数中，accumulator 表示累积的结果，currentValue 表示当前要处理的元素
+            // 在这个示例中，我们简单地将累积的结果与当前元素相加
+            return accumulator + item.secs
+        }, 0) // 初始累加值为 0
+
+        return result
+    }
+    return 0
+})
 
 function clickSel(index: number) {
     console.log(`click at index :${index}`)
@@ -116,7 +138,7 @@ function clickSel(index: number) {
         display: inline-block;
         font-size: 20px;
         color: $uni-text-color;
-        font-weight: bolder;
+        font-weight: normal;
         margin: 10px 10px 10px 10px;
     }
     image {
