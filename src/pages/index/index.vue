@@ -33,30 +33,44 @@
             :exe-time="todayExeTime"
             :models="books"
             @clickSel="clickSel"></Book1View>
-        <BookRecommend class="recommend"></BookRecommend>
+        <BookRecommend v-if="list.length > 0" class="recommend" :data="list.at(0)"></BookRecommend>
     </view>
 </template>
 
 <script lang="ts" setup>
 import BookRecommend from '@/components/bookRecommend/bookRecommend.vue'
-import { Book } from '@/defines/book'
+import { Book, Collection } from '@/defines/book'
 import { User, Exercise, ExerciseDay } from '@/defines/user'
 import Book1View from '@/components/book/book1.vue'
 import { useBooksStore } from '@/stores/book'
 import { useZNTipsStore } from '@/stores/tips'
 import { ZNTips } from '@/defines/tips'
 import { computed, reactive, ref } from 'vue'
+
+// data
 const booksStore = useBooksStore()
-booksStore.setupTemp()
+const books: Array<Book> = booksStore.getBooks()
 
 const tipsStore = useZNTipsStore()
 tipsStore.setupTips()
 
-const books: Array<Book> = booksStore.tempBooks
-
 const user = User.shared()
 
 const tips = ref<Array<ZNTips>>(tipsStore.tips)
+
+const list = ref<Array<Collection>>([])
+
+booksStore
+    .getList()
+    .then((res) => {
+        list.value = res
+        console.log('list:')
+
+        console.log(list.value)
+    })
+    .catch((err) => {
+        console.log(err)
+    })
 
 const todayExeTime = computed(() => {
     const currentDate: Date = new Date()

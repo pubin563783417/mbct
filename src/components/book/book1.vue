@@ -5,7 +5,7 @@
         }}</text>
         <view class="layout-content">
             <view
-                v-for="(item, index) in props.models"
+                v-for="(item, index) in [...props.models]"
                 :key="index"
                 @click="clickCellSel(index)"
                 class="item-content">
@@ -13,6 +13,11 @@
                 <image class="img" :src="item.icon" mode="aspectFill"></image>
                 <view class="text">{{ item.title }}</view>
                 <view class="text" style="margin-bottom: 10px">{{ item.duration }}</view>
+            </view>
+            <view class="add">
+                <view>
+                    <text>+</text>
+                </view>
             </view>
         </view>
     </view>
@@ -63,12 +68,34 @@ $img-width: $item-width - ($item-inside-margin * 2);
 }
 .item-content {
     width: $item-width;
+    height: 400rpx;
     margin-bottom: $item-space;
     border-radius: $uni-border-radius-base;
     box-shadow: 0px 1px 2px 1px rgba(0, 0, 0, 0.1);
     background-color: white;
 }
-
+.add {
+    width: $item-width;
+    height: 400rpx;
+    margin-bottom: $item-space;
+    background-color: rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    view {
+        width: 200rpx;
+        height: 200rpx;
+        color: $uni-color-primary;
+        border: 1px solid #a0cfff;
+        border-radius: $uni-border-radius-base;
+        font-weight: bolder;
+        font-size: 30px;
+        text-align: center;
+        display: flex;
+        justify-content: center; /* 水平居中 */
+        align-items: center; /* 垂直居中 */
+    }
+}
 .img {
     // padding-top: 10px;
     border-radius: $uni-border-radius-base;
