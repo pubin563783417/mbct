@@ -21,6 +21,8 @@
             :isPlaying="isPlaying"
             :newState="newState">
         </PlayBtn>
+
+        <BookUserBar class="user-bar" :control="userBarControl" @onClick="onUserBarClick" />
     </view>
 </template>
 
@@ -30,10 +32,11 @@ import { Book } from '@/defines/book'
 import PlayBtn from '@/components/playBtn/playBtn.vue'
 import { onHide, onLoad, onUnload } from '@dcloudio/uni-app'
 import { onUnmounted, ref, watch } from 'vue'
-import { useBooksStore } from '@/stores/book'
+import { useBooksStore, BookType } from '@/stores/book'
+import BookUserBar from '@/components/userBar/userBar.vue'
 
 const booksStore = useBooksStore()
-let book = ref<Book>()
+let book = ref<BookType>(booksStore.book)
 var innerAudioContext: UniNamespace.BackgroundAudioManager
 
 const audioDuration = ref(0)
@@ -41,14 +44,16 @@ const audioTime = ref(0)
 const isPlaying = ref(false)
 const slider = ref(0)
 const newState = ref(true)
-onLoad((options: any) => {
-    // 在目标页面中
-    let id: string = options.id
-    console.log(`id is ${id}`)
-    let books = booksStore.tempBooks
-    book.value = books.filter((b: any) => b.id == id)[0]
-    console.log('icon' + book.value.icon)
-})
+const userBarControl = ref<[number, boolean]>([0, booksStore.bookIsAdd(book.value)])
+
+// onLoad((options: any) => {
+//     // 在目标页面中
+//     let id: string = options.id
+//     console.log(`id is ${id}`)
+//     let books = booksStore.tempBooks
+//     book.value = books.filter((b: any) => b.id == id)[0]
+//     console.log('icon' + book.value.icon)
+// })
 onUnload(() => {
     console.log('onUnload')
     if (innerAudioContext) {
@@ -167,6 +172,23 @@ function onClick(_isPlaying: boolean) {
         isPlaying.value = false
     }
 }
+
+function onUserBarClick(index: number, isSelected: boolean) {
+    console.log('onUserBarClick : ' + index + ',' + isSelected)
+    if (isSelected) {
+        // 已经选中 ,撤销
+        if (book.value) {
+            booksStore.removeBook(book.value)
+            userBarControl.value = [index, !isSelected]
+        }
+    } else {
+        // 没选中 ，添加
+        if (book.value) {
+            booksStore.addBook(book.value)
+            userBarControl.value = [index, !isSelected]
+        }
+    }
+}
 </script>
 
 <style lang="scss">
@@ -242,5 +264,10 @@ function onClick(_isPlaying: boolean) {
     position: fixed;
     bottom: 70rpx;
     left: $uni-spacing-row-lg;
+}
+.user-bar {
+    position: fixed;
+    top: 500rpx;
+    right: 0;
 }
 </style>

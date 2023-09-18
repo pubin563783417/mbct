@@ -1,5 +1,5 @@
 <template>
-    <view style="width: 750rpx; background-color: #f8f8f8">
+    <view style="width: 750rpx; background-color: #f8f8f8; overflow: hidden">
         <view class="top-card">
             <text class="title">正念</text>
             <view class="label-card1">
@@ -31,9 +31,18 @@
         <Book1View
             class="book"
             :exe-time="todayExeTime"
-            :models="books"
-            @clickSel="clickSel"></Book1View>
-        <BookRecommend v-if="list.length > 0" class="recommend" :data="list.at(0)"></BookRecommend>
+            :models="booksStore.books"
+            @clickSel="clickSel">
+        </Book1View>
+
+        <view class="more" @click="onMore">更多练习</view>
+
+        <BookRecommend
+            v-if="list.length > 0"
+            class="recommend"
+            :data="recommend"
+            @onClick="onRecommendClick">
+        </BookRecommend>
     </view>
 </template>
 
@@ -49,7 +58,7 @@ import { computed, reactive, ref } from 'vue'
 
 // data
 const booksStore = useBooksStore()
-const books: Array<Book> = booksStore.getBooks()
+booksStore.getBooks()
 
 const tipsStore = useZNTipsStore()
 tipsStore.setupTips()
@@ -60,6 +69,14 @@ const tips = ref<Array<ZNTips>>(tipsStore.tips)
 
 const list = ref<Array<Collection>>([])
 
+const recommend = computed(() => {
+    if (list.value) {
+        const currentDate: Date = new Date()
+        const day = currentDate.getDay()
+        return list.value.at(day % list.value.length)
+    }
+    return null
+})
 booksStore
     .getList()
     .then((res) => {
@@ -92,9 +109,29 @@ const todayExeTime = computed(() => {
 
 function clickSel(index: number) {
     console.log(`click at index :${index}`)
-    let book = books[index]
+    let book = booksStore.books[index]
+    booksStore.setBook(book)
     uni.navigateTo({
-        url: `/pages/book/book?id=${book.id}`,
+        url: `/pages/book/book`,
+    })
+}
+function onRecommendClick(x: number, y: number) {
+    console.log('onRecommendClick :' + y)
+    let book = recommend.value?.list.at(y)
+    booksStore.setBook(book)
+    let url = `/pages/book/book`
+    uni.navigateTo({
+        url,
+    })
+}
+function onMore() {
+    console.log('onMore')
+
+    let url = `/pages/more/more`
+    console.log(url)
+
+    uni.navigateTo({
+        url,
     })
 }
 </script>
@@ -171,5 +208,12 @@ function clickSel(index: number) {
     margin: 60rpx;
     width: (750 - 60 * 2) * 1rpx;
     display: block;
+}
+.more {
+    font-size: 25px;
+    color: $uni-color-primary;
+    font-weight: normal;
+    margin: 0px 60rpx 0rpx 60rpx;
+    text-decoration: underline;
 }
 </style>

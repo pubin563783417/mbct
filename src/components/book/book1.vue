@@ -14,11 +14,11 @@
                 <view class="text">{{ item.title }}</view>
                 <view class="text" style="margin-bottom: 10px">{{ item.duration }}</view>
             </view>
-            <view class="add">
+            <!-- <view class="add">
                 <view>
                     <text>+</text>
                 </view>
-            </view>
+            </view> -->
         </view>
     </view>
 </template>

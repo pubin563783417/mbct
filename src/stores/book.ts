@@ -4,37 +4,71 @@ import { defineStore } from 'pinia'
 
 let kBooks = 'books'
 
+export type BookType = Book | null | undefined
 export const useBooksStore = defineStore('books', {
     state: () => {
-        return { books: Array<Book>(), list: Array<Collection>() }
+        return { books: Array<Book>(), list: Array<Collection>(), book: null as BookType }
     },
+
     actions: {
-        getBooks(): Array<Book> {
+        getBooks() {
             let books = uni.getStorageSync(kBooks)
             if (!books) {
                 books = getInitBooks()
-                this.setBooks(books)
             }
+            this.setBooks(books)
             return books
         },
 
         setBooks(books: Array<Book>) {
+            this.books = books
+            console.log('setBooks')
+
+            console.log(books)
+
             uni.setStorage({
                 key: kBooks,
                 data: books,
             })
         },
+
+        setBook(book: BookType) {
+            this.book = book
+        },
+        addBook(book: Book) {
+            this.books.push(book)
+            this.setBooks(this.books)
+        },
+        removeBook(book: Book) {
+            const newArray = this.books.filter((item) => {
+                return item.id !== book.id
+            })
+            this.setBooks(newArray)
+        },
+        bookIsAdd(book: BookType): boolean {
+            if (book) {
+                let is = this.books.some((item) => {
+                    return item.id === book.id
+                })
+                return is
+            }
+            return false
+        },
         async getList(): Promise<Array<Collection>> {
             // return res as Array<Collection>
             // let promise = new Promise<Array<Collection>>()
             return new Promise<Array<Collection>>((reslove, reject) => {
+                if (this.list.length > 0) {
+                    reslove(this.list)
+                    return
+                }
                 uni.request({
                     url: 'https://public-1-1309961435.cos.ap-chengdu.myqcloud.com/mbct/data/list.json', //仅为示例，并非真实接口地址。
                     success: (res) => {
                         if (res.statusCode == 200) {
                             // console.log(res)
-
-                            reslove(res.data as Array<Collection>)
+                            this.list = res.data as Array<Collection>
+                            reslove(this.list)
                         } else {
                             reject(res.errMsg ?? '' + res.statusCode)
                         }
@@ -54,7 +88,7 @@ function getInitBooks(): Array<Book> {
             id: 'bl0000',
             title: '精华-正念呼吸',
             duration: '10分钟',
-            url: 'https://public-1-1309961435.cos.ap-chengdu.myqcloud.com/mbct/audios/jx-hx.mp3',
+            url: 'https://public-1-1309961435.cos.ap-chengdu.myqcloud.com/mbct/audios/jx/znhx.mp3',
             icon: 'https://public-1-1309961435.cos.ap-chengdu.myqcloud.com/mbct/imgs/jingzuo.webp',
             desc: `正念呼吸是正念冥想中的核心练习之一，它帮助我们专注于呼吸这个当下的感觉，从而增强觉知、减轻压力，并培养心灵的平静。以下是正念呼吸的核心要点：
 
